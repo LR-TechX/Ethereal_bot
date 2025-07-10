@@ -5,6 +5,7 @@ import time
 import secrets
 import datetime
 import os
+import psycopg2
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -23,11 +24,13 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN", "7603606508:AAHACwLH7BtDb5UUz-ifwTxeSWBZGlCwGOw")
 ADMIN_ID = int(os.getenv("ADMIN_ID", 5646269450))  # Super admin ID
 GROUP_LINK = os.getenv("GROUP_LINK", "@etherealplus")
-SITE_LINK = os.getenv("SITE_LINK", "https://ethereal.example.com")
-AI_BOOST_LINK = os.getenv("AI_BOOST_LINK", "https://ai.ethereal.example.com")
-VERIFICATION_GROUP = os.getenv("VERIFICATION_GROUP", "@YourVerificationGroup")
-DAILY_TASK_LINK = os.getenv("DAILY_TASK_LINK", "https://tasks.ethereal.example.com")
+SITE_LINK = os.getenv("SITE_LINK", "https://etherealweb.site/signup?ref=Bigscott")
+AI_BOOST_LINK = os.getenv("AI_BOOST_LINK", "https://etherealweb.site/account/social-boost")
+VERIFICATION_GROUP = os.getenv("VERIFICATION_GROUP", "@taskchecked")
+DAILY_TASK_LINK = os.getenv("DAILY_TASK_LINK", "https://etherealweb.site/account/social/snapchat-streak")
 
+# The database source
+DATABASE_URL = os.environ.get('DATABASE_URL')
 # Predefined FAQs
 FAQS = {
     "what_is_ethereal": {
@@ -47,7 +50,7 @@ FAQS = {
 HELP_TOPICS = {
     "how_to_pay": {"label": "How to Pay", "type": "video", "url": "https://youtu.be/YourPaymentGuide"},
     "register": {"label": "Registration Process", "type": "text", "text": (
-        "1. /start → choose package\n"
+        "1. Once you have clicked start → choose package\n"
         "2. Select your coach\n"
         "3. Pay via your selected country account → upload screenshot\n"
         "4. Wait for approval, then send details\n"
@@ -62,7 +65,7 @@ HELP_TOPICS = {
 
 # Database setup with error handling
 try:
-    conn = sqlite3.connect('ethereal_bot.db', check_same_thread=False)
+    conn = psycopg2.connect('DATABASE_URL', check_same_thread=False)
     cursor = conn.cursor()
 
     # Users table with added 'selected_coach' column
@@ -651,8 +654,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "• Earn up to $20 sending Snapchat streaks\n"
                 "• ₦8,100–₦8,400 per person you invite\n"
                 "• Valid for 5 months (renewal fee required)\n"
-                "• No personal AI-assisted earnings\n"
-                "— — —\n"
+                "• No personal AI-assisted earnings\n\n"
+                "— — —\n\n"
                 "📍 ETHEREAL-X — ₦14,000\n"
                 "• Instant ₦12,000 cashback\n"
                 "• Free up to 5GB data on signup\n"
@@ -807,8 +810,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     await context.bot.send_message(
                         user_chat_id,
                         "✅ Your payment is approved!\n\n*KINDLY 🎯 SEND YOUR DETAILS FOR YOUR REGISTRATION*\n"
-                        "➡️ Email address\n➡️ Full name\n➡️ Username (e.g. @you)\n➡️ Phone number (with country code)\n\n"
-                        "All in one message, each on its own line.",
+                        "➡️ Email address\n➡️ Full name\n➡️ Username (e.g. @you)\n➡️ Phone number (with your country code)\n\n"
+                        "All in one message, each on its own line as seen.",
                         parse_mode="Markdown"
                     )
                     await query.edit_message_text("Payment approved. Waiting for user details.")
@@ -1252,7 +1255,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         conn.commit()
                 await context.bot.send_message(
                     for_user,
-                    f"🎉 Registration successful! Your username is {username} and password is {password}. Join our group: {GROUP_LINK}"
+                    f"🎉 Registration successful! Your username is\n {username}\n and password is\n {password}\n\n Join the group using the link below to keep up with info:\n {GROUP_LINK}"
                 )
                 cursor.execute("SELECT package, email, name, phone FROM users WHERE chat_id=?", (for_user,))
                 user_details = cursor.fetchone()
@@ -1470,7 +1473,7 @@ def main():
         application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
         # Replace with your actual channel ID
-        channel_id = int(os.getenv("CHANNEL_ID", -1001234567890))  # Update with actual channel ID
+        channel_id = int(os.getenv("CHANNEL_ID", -1002864378748))  # Updated channl ID
         application.add_handler(MessageHandler(filters.Chat(channel_id) & filters.TEXT, channel_message))
         application.job_queue.run_daily(daily_reminder, time=datetime.time(hour=8, minute=0))
         application.job_queue.run_daily(daily_summary, time=datetime.time(hour=20, minute=0))
@@ -1484,7 +1487,8 @@ if __name__ == '__main__':
 
 # Define coupon_accounts dictionary if used elsewhere in the original code
 coupon_accounts = {
-    "Account1": "Payment details for Account1",
-    "Account2": "Payment details for Account2",
+    "Kuda Account": "2036035854\n Kuda Microfinance Bank\n Eluem, Chike Olanrewaju",
+    "Opay Account": "8051454564\n Opay\n Chike Eluem Olanrewaju",
+    "Zenith Account": "2267515466\n Zenith Bank\n Chike Eluem Olanrewaju",
     # Add more accounts as needed
 }
