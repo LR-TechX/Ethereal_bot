@@ -16,6 +16,18 @@ from telegram.ext import (
     ContextTypes,
 )
 
+# SQl Alchemy updated for deployment
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # loads .env
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+db = SQLAlchemy(app)
+
 # Load environment variables for sensitive credentials
 from dotenv import load_dotenv
 load_dotenv()
@@ -1473,7 +1485,7 @@ def main():
         application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
         # Replace with your actual channel ID
-        channel_id = int(os.getenv("CHANNEL_ID", -1002864378748))  # Updated channl ID
+        channel_id = int(os.getenv("CHANNEL_ID", -1002028515715))  # Updated channl ID
         application.add_handler(MessageHandler(filters.Chat(channel_id) & filters.TEXT, channel_message))
         application.job_queue.run_daily(daily_reminder, time=datetime.time(hour=8, minute=0))
         application.job_queue.run_daily(daily_summary, time=datetime.time(hour=20, minute=0))
