@@ -1,0 +1,10 @@
+{
+  "pending_users": [
+    {
+      "id": "12345",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "username": "@johndoe"
+    }
+  ]
+}
